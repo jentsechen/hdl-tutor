@@ -1,0 +1,3 @@
+workspace/
+*.vvp
+__pycache__/
