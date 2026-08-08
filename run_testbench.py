@@ -25,10 +25,16 @@ def find_tool(name):
     sys.exit(f"error: could not find '{name}' on PATH or in {IVERILOG_FALLBACK_DIR}")
 
 
+TEMPLATE_DIR_NAME = "template"
+
+
 def list_problems():
     return sorted(
         p.name for p in PROBLEMS_DIR.iterdir()
-        if p.is_dir() and not p.name.startswith("_") and (p / "testbench.v").exists()
+        if p.is_dir()
+        and p.name != TEMPLATE_DIR_NAME
+        and not p.name.startswith("_")
+        and (p / "testbench.v").exists()
     )
 
 

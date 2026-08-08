@@ -1,5 +1,10 @@
 module top_module (
-    // TODO: ports
+    input clk,
+    input load,
+    input ena,
+    input [1:0] amount,
+    input [63:0] data,
+    output reg [63:0] q
 );
 
 endmodule

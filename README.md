@@ -47,9 +47,9 @@ With no arguments, each step interactively asks you to pick a problem from
 You can skip the prompts by passing arguments directly:
 
 ```powershell
-python run_testbench.py copy hierarchical-32-bit-adder --source template
-python run_testbench.py copy hierarchical-32-bit-adder --source solution
-python run_testbench.py run hierarchical-32-bit-adder
+python run_testbench.py copy 000-hierarchical-32-bit-adder --source template
+python run_testbench.py copy 000-hierarchical-32-bit-adder --source solution
+python run_testbench.py run 000-hierarchical-32-bit-adder
 ```
 
 Typical workflow while practicing:
@@ -67,19 +67,19 @@ only run it again once you actually want to discard your current progress
 
 ## Adding a new problem
 
-Copy `problems/_template/` to `problems/<new-problem-name>/` and fill in the
-`TODO`s in each file:
+Copy `problems/template/` to `problems/<NNN-new-problem-name>/` and fill in
+the `TODO`s in each file:
 
 ```powershell
-Copy-Item problems/_template problems/<new-problem-name> -Recurse
+Copy-Item problems/template problems/<NNN-new-problem-name> -Recurse
 ```
 
 - `problem.md` — write the problem statement
 - `template.v` / `solution.v` — same port list in both; fill in the
   reference implementation in `solution.v` only
-- `testbench.v` — write the checks; see `problems/hierarchical-32-bit-adder/testbench.v`
-  (combinational) or `problems/4-digit-bcd-counter/testbench.v` (clocked) for
-  the established pattern
+- `testbench.v` — write the checks; see `problems/000-hierarchical-32-bit-adder/testbench.v`
+  (combinational) or `problems/001-4-digit-bcd-counter/testbench.v` (clocked)
+  for the established pattern
 
-`_template/` itself is excluded from `run_testbench.py`'s problem picker
-(any folder starting with `_` is skipped), so it's safe to leave in place.
+`problems/template/` itself is excluded from `run_testbench.py`'s problem
+picker, so it's safe to leave in place.
