@@ -1,4 +1,4 @@
-# Hierarchical 32-bit Adder Design
+# Hierarchical 32-bit Adder
 
 You are given a module `add16` that performs a 16-bit addition. Instantiate
 two of them to create a 32-bit adder.
