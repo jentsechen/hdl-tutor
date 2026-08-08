@@ -1,4 +1,4 @@
-# Four-digit BCD Counter
+# 4-digit BCD Counter
 
 Build a 4-digit BCD (binary-coded decimal) counter. Each decimal digit is
 encoded using 4 bits: `q[3:0]` is the ones digit, `q[7:4]` is the tens digit,
