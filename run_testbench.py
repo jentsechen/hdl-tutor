@@ -28,7 +28,7 @@ def find_tool(name):
 def list_problems():
     return sorted(
         p.name for p in PROBLEMS_DIR.iterdir()
-        if p.is_dir() and (p / "testbench.v").exists()
+        if p.is_dir() and not p.name.startswith("_") and (p / "testbench.v").exists()
     )
 
 
