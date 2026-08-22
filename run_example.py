@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
-"""Compile & run one examples/<lesson>/<topic>/example.v with Icarus Verilog."""
+"""Compile & run one examples/<lesson>/<topic>.v with Icarus Verilog."""
 import argparse
 import subprocess
 import sys
 import shutil
+import tempfile
 from pathlib import Path
 
 EXAMPLES_DIR = Path(__file__).parent / "examples"
@@ -22,8 +23,8 @@ def find_tool(name):
 
 def list_examples():
     return sorted(
-        str(p.parent.relative_to(EXAMPLES_DIR)).replace("\\", "/")
-        for p in EXAMPLES_DIR.glob("*/*/example.v")
+        str(p.relative_to(EXAMPLES_DIR).with_suffix("")).replace("\\", "/")
+        for p in EXAMPLES_DIR.glob("*/*.v")
     )
 
 
@@ -47,25 +48,25 @@ def choose_example(name):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("example", nargs="?", help="e.g. VER-07/function")
+    parser.add_argument("example", nargs="?", help="e.g. VER-07/00-function")
     args = parser.parse_args()
 
     example_name = choose_example(args.example)
-    example_file = EXAMPLES_DIR / example_name / "example.v"
+    example_file = EXAMPLES_DIR / f"{example_name}.v"
 
     iverilog = find_tool("iverilog")
     vvp = find_tool("vvp")
 
-    sim_out = EXAMPLES_DIR / example_name / "sim.vvp"
-    compile_cmd = [iverilog, "-o", str(sim_out), str(example_file)]
-    print("+", " ".join(compile_cmd), flush=True)
-    subprocess.run(compile_cmd, check=True)
+    with tempfile.TemporaryDirectory() as tmp_dir:
+        sim_out = Path(tmp_dir) / "sim.vvp"
+        compile_cmd = [iverilog, "-o", str(sim_out), str(example_file)]
+        print("+", " ".join(compile_cmd), flush=True)
+        subprocess.run(compile_cmd, check=True)
 
-    run_cmd = [vvp, str(sim_out)]
-    print("+", " ".join(run_cmd), flush=True)
-    result = subprocess.run(run_cmd)
+        run_cmd = [vvp, str(sim_out)]
+        print("+", " ".join(run_cmd), flush=True)
+        result = subprocess.run(run_cmd)
 
-    sim_out.unlink(missing_ok=True)
     sys.exit(result.returncode)
 
 

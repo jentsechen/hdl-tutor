@@ -5,9 +5,9 @@ Verilog practice problems, each graded by a testbench run through [Icarus Verilo
 ## Layout
 
 - `lessons/<lesson-id>.md` — lecture notes for that lesson
-- `examples/<lesson-id>/<topic>/example.v` — a small, self-contained,
-  runnable Verilog file demonstrating one concept from that lesson (run it
-  with `python run_example.py <lesson-id>/<topic>`, see below)
+- `examples/<lesson-id>/<topic>.v` — a small, self-contained, runnable
+  Verilog file demonstrating one concept from that lesson (run it with
+  `python run_example.py <lesson-id>/<topic>`, see below)
 - `problems/<problem-name>/` — graded practice problems, see below
 
 Each problem lives under `problems/<problem-name>/` and contains:
@@ -38,12 +38,12 @@ tools aren't found on `PATH`.
 ## Running an example
 
 ```powershell
-python run_example.py VER-07/00-function
+python run_example.py VER-08/00-function
 ```
 
-With no argument it interactively lists every `examples/<lesson>/<topic>/`
-to pick from. It compiles that topic's `example.v`, runs it, and cleans up
-the compiled output afterward.
+With no argument it interactively lists every `examples/<lesson>/<topic>.v`
+to pick from. It compiles that file, runs it, and cleans up the compiled
+output afterward.
 
 ## Usage
 

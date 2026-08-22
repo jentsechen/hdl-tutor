@@ -1,211 +1,119 @@
-# VER-07 | Hierarchical & Reusable RTL Design
+# VER-07 | Testbench & Integrated RTL Design
 
-1. [Introduction](#1-introduction)
-2. [Function and Task](#2-function-and-task)
-3. [Parameters](#3-parameters)
-4. [Conditional Compilation](#4-conditional-compilation)
-5. [Useful Simulation System Tasks](#5-useful-simulation-system-tasks)
-6. [`force` and `release`](#6-force-and-release)
+1. [DUT and Testbench Structure](#dut-and-testbench-structure)
+2. [`initial`](#initial)
+3. [Clock and Reset Generation](#clock-and-reset-generation)
+4. [Input Stimulus](#input-stimulus)
+5. [System Tasks](#system-tasks)
+6. [Waveform Debugging](#waveform-debugging)
+7. [Design Verification Flow](#design-verification-flow)
 
-## 1. Introduction
+## DUT and Testbench Structure
 
-**Why Reusable RTL?**
+The **DUT** (Design Under Test) is the module being verified - it's never
+modified by the testbench itself. A testbench is a separate module that:
 
-As a design becomes larger, repeatedly writing the same logic makes the
-code difficult to maintain. Verilog provides several ways to organize and
-reuse code:
-
-```
-System
-│
-├── Modules
-│   ├── Submodules
-│   ├── Functions
-│   └── Tasks
-│
-└── Parameters
-```
-
-**Hierarchical Module Design**
-
-- Module definition: Hardware Template
-- Module instance: Actual Hardware Block
-
-## 2. Function and Task
-
-### Function
-
-A Verilog function is used to describe a reusable computation that:
-
-- Has at least one input
-- Produces exactly one return value
-- Executes in zero simulation time
-- Cannot contain delay or event-control statements
-
-**Structure**
-
-```verilog
-function [WIDTH-1:0] <function_name>;
-    input ...;
-    begin
-        <function_name> = ...;
-    end
-endfunction
-```
-
-The name of the function acts as an implicit return variable. If no return
-width is specified, the default function result is only one bit.
-
-**Example: Function with Multiple Inputs**
-
-```verilog
-function [7:0] multiply;
-    input [3:0] a;
-    input [3:0] b;
-    begin
-        multiply = a * b;
-    end
-endfunction
-```
-
-Invocation: `result = multiply(a, b);`
+1. Declares `reg` to drive the DUT's inputs and `wire`s to observe its
+   outputs
+2. Instantiates the DUT
+3. Uses an `initial` block to apply stimulus and check results
+4. Ends the simulation with `$finish`
 
 See
-[examples/VER-07/00-function/example.v](../examples/VER-07/00-function/example.v)
-for `multiply` called from both a continuous assign and procedural code,
-plus a demonstration that a function call never advances simulation time.
+[examples/VER-07/00-dut-and-testbench-structure.v](../examples/VER-07/00-dut-and-testbench-structure.v)
+for this skeleton applied to a small adder DUT.
 
-### Task
+## `initial`
 
-A task is another reusable behavioral construct, but it is more flexible
-than a function. A task can:
-
-- Have zero or more inputs
-- Have multiple outputs
-- Have `input`, `output`, and `inout` arguments
-- Contain delays
-- Contain event controls
-- Invoke another task or function
-
-**Structure**
-
-```verilog
-task task_name;
-    input ...;
-    output ...;
-    begin
-        // statements
-    end
-endtask
-```
-
-**Example: Multiple Outputs** — suppose we frequently need AND, OR, and XOR
-results from the same two operands. See
-[examples/VER-07/01-task/example.v](../examples/VER-07/01-task/example.v).
-
-Invocation: `logic_operations(a, b, and_out, or_out, xor_out);`
-
-### Task vs. Function
-
-| Feature | Function | Task |
-|---|---|---|
-| Input arguments | ≥ 1 | 0 or more |
-| Output arguments | No | Yes |
-| Return value | Exactly one | No direct return |
-| Multiple outputs | No | Yes |
-| `#delay` | No | Yes |
-| Event control | No | Yes |
-| Can call function | Yes | Yes |
-| Can call task | No | Yes |
-| Simulation time | Zero | May consume time |
-| Typical use | Calculation | Procedure / stimulus |
-
-## 3. Parameters
-
-**Definition**: parameters allow one module definition to support several
-configurations.
-
-**Example**
-
-```verilog
-module counter #(parameter WIDTH = 8) (
-    input  clk,
-    input  reset,
-    output reg [WIDTH-1:0] q
-);
-    always @(posedge clk) begin
-        if (reset) q <= 0;
-        else q <= q + 1'b1;
-    end
-endmodule
-```
-
-**Override** — two mechanisms:
-
-- Parameter assignment during module instantiation
-- `defparam`
+Every `initial` block starts running at time 0. Statements *within* one
+block execute in order, but separate `initial` blocks run **concurrently**
+and interleave with each other based on their own delays - this is how a
+testbench can, for example, generate a clock in one `initial`/`always`
+block while applying stimulus in another.
 
 See
-[examples/VER-07/02-parameter/example.v](../examples/VER-07/02-parameter/example.v)
-for both an 8-bit and a 16-bit instance of the same `counter` module, plus a
-`defparam` override.
+[examples/VER-07/01-initial.v](../examples/VER-07/01-initial.v)
+for three `initial` blocks interleaving.
+
+## Clock and Reset Generation
+
+**Clock generation** - the standard free-running clock pattern:
 
 ```verilog
-// Parameter assignment during instantiation
-counter #(.WIDTH(8)) counter8 (
-    .clk   (clk),
-    .reset (reset),
-    .q     (q8)
-);
-
-// defparam
-defparam counter16.WIDTH = 16;
-```
-
-## 4. Conditional Compilation
-
-Sometimes we want some Verilog code to exist only in certain
-configurations.
-
-```verilog
-`define DEBUG
-`ifdef DEBUG
-    always @(posedge clk) $display("counter = %d", q);
-`endif
+reg clk;
+initial clk = 0;
+always #5 clk = ~clk; // 10ns period -> 100MHz
 ```
 
 See
-[examples/VER-07/03-conditional-compilation/example.v](../examples/VER-07/03-conditional-compilation/example.v).
+[examples/VER-07/10-clock-generation.v](../examples/VER-07/10-clock-generation.v).
 
-## 5. Useful Simulation System Tasks
-
-| syntax | description | example |
-|---|---|---|
-| `$display` | Print a value immediately | `$display("q = %b", q);` |
-| `%m` | Print the current hierarchical scope | `$display("Running in %m");` |
-| `$strobe` | Prints after assignments scheduled for the current simulation time have executed | `$strobe("q = %b", q);` |
-| `$random` | Generate random test values | `input_data = $random;` |
-
-See the matching examples:
-[display](../examples/VER-07/04-display/example.v),
-[strobe](../examples/VER-07/05-strobe/example.v),
-[random](../examples/VER-07/06-random/example.v).
-
-## 6. `force` and `release`
-
-`force` and `release` can override registers or nets, and are recommended
-for stimulus/debugging rather than design blocks.
-
-**Example**
+**Reset generation** - assert reset at the start of simulation, hold it
+across a couple of clock edges so the DUT definitely samples it, then
+release it so the DUT starts from a known state:
 
 ```verilog
 initial begin
-    #50;
-    force dut.q = 1'b1;
-    #20;
-    release dut.q;
+    reset = 1;
+    @(posedge clk);
+    @(posedge clk);
+    reset = 0;
 end
 ```
 
 See
-[examples/VER-07/07-force-release/example.v](../examples/VER-07/07-force-release/example.v).
+[examples/VER-07/11-reset-generation.v](../examples/VER-07/11-reset-generation.v).
+
+## Input Stimulus
+
+Rather than writing out every test case by hand, stimulus is often driven
+from a small table (or loop) of test vectors applied to the DUT one at a
+time.
+
+See
+[examples/VER-07/20-input-stimulus.v](../examples/VER-07/20-input-stimulus.v).
+
+## System Tasks
+
+| syntax | description |
+|---|---|
+| `$display` | Prints its arguments immediately, once - like `printf`. |
+| `$monitor` | Set up once; automatically re-prints whenever any of its listed variables changes value. Only plain signals can be passed to it (not expressions) - assign an expression to a wire first if you need one. |
+| `$strobe` | Like `$display`, but prints only after every statement scheduled for the current simulation time has executed - so it always shows the final, settled value instead of a possibly-stale one. |
+| `$finish` | Stops the simulator immediately, wherever it's called. Without it, a testbench with a free-running clock would simulate forever. |
+
+See
+[examples/VER-07/30-system-tasks.v](../examples/VER-07/30-system-tasks.v)
+for all four together: a one-off `$display`, a `$display`/`$strobe` pair
+showing the stale-vs-settled value difference at the same simulation time,
+a `$monitor` that keeps re-printing as values change, and `$finish` cutting
+off a free-running clock that would otherwise never stop.
+
+## Waveform Debugging
+
+`$dumpfile`/`$dumpvars` record every signal change to a `.vcd` file that a
+waveform viewer can open, so you can visually step through signal
+transitions instead of reading `$display` text:
+
+```verilog
+initial begin
+    $dumpfile("waveform.vcd");
+    $dumpvars(0, testbench); // 0 = dump this scope and everything below it
+end
+```
+
+See
+[examples/VER-07/40-waveform-debugging.v](../examples/VER-07/40-waveform-debugging.v).
+Running it produces `waveform.vcd` in your current directory; open it with
+GTKWave (bundled alongside Icarus Verilog at
+`C:\iverilog\gtkwave\bin\gtkwave.exe`).
+
+## Design Verification Flow
+
+1. Design the DUT
+2. Write a testbench around it
+3. Generate clock/reset and apply input stimulus
+4. Observe the DUT's outputs and compare them against expected behavior
+5. If something's wrong, debug using `$display`/`$monitor` text output or a
+   waveform viewer
+6. Fix the DUT (or the testbench) and repeat from step 3

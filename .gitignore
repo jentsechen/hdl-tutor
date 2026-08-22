@@ -1,4 +1,5 @@
 workspace/*
 !workspace/.gitkeep
 *.vvp
+*.vcd
 __pycache__/
