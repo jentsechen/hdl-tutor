@@ -2,4 +2,6 @@ workspace/*
 !workspace/.gitkeep
 *.vvp
 *.vcd
+*.wlf
+transcript
 __pycache__/

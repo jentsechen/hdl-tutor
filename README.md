@@ -4,7 +4,8 @@ Verilog practice problems, each graded by a testbench run through [Icarus Verilo
 
 ## Layout
 
-- `lessons/<lesson-id>.md` — lecture notes for that lesson
+- `lessons/<lesson-id>/<lesson-id>.md` — lecture notes for that lesson, plus
+  any accompanying images alongside it
 - `examples/<lesson-id>/<topic>.v` — a small, self-contained, runnable
   Verilog file demonstrating one concept from that lesson (run it with
   `python run_example.py <lesson-id>/<topic>`, see below)

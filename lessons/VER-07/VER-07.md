@@ -7,6 +7,7 @@
 5. [System Tasks](#system-tasks)
 6. [Waveform Debugging](#waveform-debugging)
 7. [Design Verification Flow](#design-verification-flow)
+8. [Viewing Waveforms with ModelSim](#viewing-waveforms-with-modelsim)
 
 ## DUT and Testbench Structure
 
@@ -20,7 +21,7 @@ modified by the testbench itself. A testbench is a separate module that:
 4. Ends the simulation with `$finish`
 
 See
-[examples/VER-07/00-dut-and-testbench-structure.v](../examples/VER-07/00-dut-and-testbench-structure.v)
+[examples/VER-07/00-dut-and-testbench-structure.v](../../../examples/VER-07/00-dut-and-testbench-structure.v)
 for this skeleton applied to a small adder DUT.
 
 ## `initial`
@@ -32,7 +33,7 @@ testbench can, for example, generate a clock in one `initial`/`always`
 block while applying stimulus in another.
 
 See
-[examples/VER-07/01-initial.v](../examples/VER-07/01-initial.v)
+[examples/VER-07/01-initial.v](../../examples/VER-07/01-initial.v)
 for three `initial` blocks interleaving.
 
 ## Clock and Reset Generation
@@ -46,7 +47,7 @@ always #5 clk = ~clk; // 10ns period -> 100MHz
 ```
 
 See
-[examples/VER-07/10-clock-generation.v](../examples/VER-07/10-clock-generation.v).
+[examples/VER-07/10-clock-generation.v](../../examples/VER-07/10-clock-generation.v).
 
 **Reset generation** - assert reset at the start of simulation, hold it
 across a couple of clock edges so the DUT definitely samples it, then
@@ -62,7 +63,7 @@ end
 ```
 
 See
-[examples/VER-07/11-reset-generation.v](../examples/VER-07/11-reset-generation.v).
+[examples/VER-07/11-reset-generation.v](../../examples/VER-07/11-reset-generation.v).
 
 ## Input Stimulus
 
@@ -71,7 +72,7 @@ from a small table (or loop) of test vectors applied to the DUT one at a
 time.
 
 See
-[examples/VER-07/20-input-stimulus.v](../examples/VER-07/20-input-stimulus.v).
+[examples/VER-07/20-input-stimulus.v](../../examples/VER-07/20-input-stimulus.v).
 
 ## System Tasks
 
@@ -83,7 +84,7 @@ See
 | `$finish` | Stops the simulator immediately, wherever it's called. Without it, a testbench with a free-running clock would simulate forever. |
 
 See
-[examples/VER-07/30-system-tasks.v](../examples/VER-07/30-system-tasks.v)
+[examples/VER-07/30-system-tasks.v](../../examples/VER-07/30-system-tasks.v)
 for all four together: a one-off `$display`, a `$display`/`$strobe` pair
 showing the stale-vs-settled value difference at the same simulation time,
 a `$monitor` that keeps re-printing as values change, and `$finish` cutting
@@ -103,10 +104,17 @@ end
 ```
 
 See
-[examples/VER-07/40-waveform-debugging.v](../examples/VER-07/40-waveform-debugging.v).
+[examples/VER-07/40-waveform-debugging.v](../../examples/VER-07/40-waveform-debugging.v).
 Running it produces `waveform.vcd` in your current directory; open it with
 GTKWave (bundled alongside Icarus Verilog at
 `C:\iverilog\gtkwave\bin\gtkwave.exe`).
+
+Note: ModelSim cannot open a `.vcd` file directly - it only reads its own
+`.wlf` format (`dataset open waveform.vcd` fails with "WLF Error: Bad
+initial WLF parcel"). To view a waveform in ModelSim, either convert with
+`vcd2wlf.exe`, or run the simulation natively in ModelSim so it writes
+`.wlf` directly - see [Viewing Waveforms with
+ModelSim](#viewing-waveforms-with-modelsim).
 
 ## Design Verification Flow
 
@@ -117,3 +125,30 @@ GTKWave (bundled alongside Icarus Verilog at
 5. If something's wrong, debug using `$display`/`$monitor` text output or a
    waveform viewer
 6. Fix the DUT (or the testbench) and repeat from step 3
+
+## Viewing Waveforms with ModelSim
+
+`run_modelsim.py` (project root) compiles and simulates an example directly
+in ModelSim instead of Icarus Verilog, so the waveform is written natively
+as a `.wlf` file - no `.vcd`/`vcd2wlf` conversion involved:
+
+```
+python run_modelsim.py VER-07/40-waveform-debugging
+```
+
+This runs `vlib`/`vlog`/`vsim -c ... -do "log -r /*; run -all"`, saves the
+result next to the source as
+`examples/VER-07/40-waveform-debugging.wlf`, and opens it in the `vsim`
+waveform GUI. Pass `--no-gui` to skip the GUI, or `--top <module>` if the
+example's top-level module isn't named `testbench` (e.g. the VER-08
+examples all use `example`).
+
+The script targets the ModelSim install at
+`C:\intelFPGA\20.1\modelsim_ase\win32aloem` specifically, rather than
+whatever `vsim` is first on PATH - this machine also has a separate Questa
+install whose license has expired.
+
+### Example
+See [examples/VER-07/11-reset-generation.v](../../examples/VER-07/11-reset-generation.v).
+<img src="ports.png" width="30%">
+<img src="waveform.png" width="100%">

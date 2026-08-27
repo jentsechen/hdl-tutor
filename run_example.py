@@ -65,7 +65,7 @@ def main():
 
         run_cmd = [vvp, str(sim_out)]
         print("+", " ".join(run_cmd), flush=True)
-        result = subprocess.run(run_cmd)
+        result = subprocess.run(run_cmd, cwd=example_file.parent)
 
     sys.exit(result.returncode)
 
