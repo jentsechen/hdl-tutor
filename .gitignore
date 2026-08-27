@@ -4,4 +4,5 @@ workspace/*
 *.vcd
 *.wlf
 transcript
+*.bkp
 __pycache__/
