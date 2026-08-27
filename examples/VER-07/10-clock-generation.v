@@ -1,4 +1,4 @@
-`timescale 1ns/1ps
+`timescale 1ns / 1ps
 
 module testbench;
     reg clk;
@@ -6,7 +6,7 @@ module testbench;
     // The standard free-running clock generator: initialize once, then
     // toggle forever on a fixed half-period.
     initial clk = 0;
-    always #5 clk = ~clk; // 10ns period -> 100MHz
+    always #5 clk = ~clk;  // 10ns period -> 100MHz
 
     integer i;
     initial begin

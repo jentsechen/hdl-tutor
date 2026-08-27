@@ -1,13 +1,13 @@
-`timescale 1ns/1ps
+`timescale 1ns / 1ps
 
 module testbench;
     reg clk;
     reg [7:0] a, b;
-    wire [7:0] sum = a + b; // $monitor can only take signals, not expressions
+    wire [7:0] sum = a + b;  // $monitor can only take signals, not expressions
     integer edge_count;
 
     initial clk = 0;
-    always #5 clk = ~clk; // would toggle forever on its own
+    always #5 clk = ~clk;  // would toggle forever on its own
     always @(posedge clk) edge_count = edge_count + 1;
 
     // $display prints its arguments immediately, once - like printf.
@@ -30,7 +30,7 @@ module testbench;
         // settled, so it always shows the final value.
         $display("t=%0t $display: a=%0d (may be stale)", $time, a);
         $strobe("t=%0t $strobe : a=%0d (always settled)", $time, a);
-        a = 5; // scheduled for the same time step as the two prints above
+        a = 5;  // scheduled for the same time step as the two prints above
 
         #10 b = 9;
 
