@@ -13,8 +13,8 @@
 The **DUT** (Design Under Test) is the module being verified - it's never
 modified by the testbench itself. A testbench is a separate module that:
 
-1. Declares `reg` to drive the DUT's inputs and `wire`s to observe its
-   outputs
+1. Declares `reg` to drive the DUT's inputs (data source) and `wire`s to observe its
+   outputs (data sink)
 2. Instantiates the DUT
 3. Uses an `initial` block to apply stimulus and check results
 4. Ends the simulation with `$finish`
