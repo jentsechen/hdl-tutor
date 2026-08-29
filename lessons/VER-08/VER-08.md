@@ -188,15 +188,12 @@ See
 
 | syntax | description | example |
 |---|---|---|
-| `$display` | Print a value immediately | `$display("q = %b", q);` |
 | `%m` | Print the current hierarchical scope | `$display("Running in %m");` |
-| `$strobe` | Prints after assignments scheduled for the current simulation time have executed | `$strobe("q = %b", q);` |
 | `$random` | Generate random test values | `input_data = $random;` |
 
 See the matching examples:
-[display](../../examples/VER-08/40-display.v),
-[strobe](../../examples/VER-08/41-strobe.v),
-[random](../../examples/VER-08/42-random.v).
+[%m](../../examples/VER-08/40-scope.v),
+[random](../../examples/VER-08/41-random.v).
 
 ## 6. `force` and `release`
 
