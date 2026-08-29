@@ -1,7 +1,7 @@
 `timescale 1ns / 1ps
 
 // A task can have multiple outputs - a function can only return one value.
-module example;
+module testbench;
     reg [7:0] a, b;
     reg [7:0] and_out, or_out, xor_out;
 

@@ -51,11 +51,13 @@ def main():
     parser.add_argument("example", nargs="?", help="e.g. VER-07/40-waveform-debugging")
     parser.add_argument("--top", default="testbench", help="top-level module name (default: testbench)")
     parser.add_argument("--no-gui", action="store_true", help="skip launching the waveform GUI")
+    parser.add_argument("--vcd", action="store_true", help="also dump a .vcd next to the example (for e.g. wavedrom_from_vcd.py)")
     args = parser.parse_args()
 
     example_name = choose_example(args.example)
     example_file = EXAMPLES_DIR / f"{example_name}.v"
     wlf_out = example_file.with_suffix(".wlf")
+    vcd_out = example_file.with_suffix(".vcd")
 
     vlib = find_tool("vlib")
     vlog = find_tool("vlog")
@@ -72,7 +74,15 @@ def main():
         print("+", " ".join(vlog_cmd), flush=True)
         subprocess.run(vlog_cmd, cwd=tmp_dir, check=True)
 
-        vsim_cmd = [vsim, "-c", f"work.{args.top}", "-do", "log -r /*; run -all; quit -f"]
+        do_parts = ["log -r /*"]
+        if args.vcd:
+            do_parts += ["vcd file dump.vcd", "vcd add -r /*"]
+        do_parts.append("run -all")
+        if args.vcd:
+            do_parts.append("vcd flush")
+        do_parts.append("quit -f")
+
+        vsim_cmd = [vsim, "-c", f"work.{args.top}", "-do", "; ".join(do_parts)]
         print("+", " ".join(vsim_cmd), flush=True)
         subprocess.run(vsim_cmd, cwd=tmp_dir, check=True)
 
@@ -81,7 +91,15 @@ def main():
             sys.exit(f"error: simulation did not produce {produced}")
         shutil.copy(produced, wlf_out)
 
+        if args.vcd:
+            produced_vcd = tmp_dir / "dump.vcd"
+            if not produced_vcd.exists():
+                sys.exit(f"error: simulation did not produce {produced_vcd}")
+            shutil.copy(produced_vcd, vcd_out)
+
     print(f"waveform saved to {wlf_out}")
+    if args.vcd:
+        print(f"vcd saved to {vcd_out}")
 
     if not args.no_gui:
         gui_cmd = [vsim, "-view", str(wlf_out), "-do", "add wave -r /*; wave zoom full"]

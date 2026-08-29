@@ -5,7 +5,7 @@
 //   - the function's own name acts as the implicit return variable
 //   - executes in zero simulation time, and cannot contain #delay or
 //     @(...) event-control statements (only a task can - see ../01-task)
-module example;
+module testbench;
 
     // Multi-input function with an explicit return width.
     function [7:0] multiply;

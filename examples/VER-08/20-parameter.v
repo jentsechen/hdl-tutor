@@ -13,7 +13,7 @@ module counter #(
     end
 endmodule
 
-module example;
+module testbench;
     reg clk, reset;
     wire [1:0] q2;
     wire [2:0] q3;

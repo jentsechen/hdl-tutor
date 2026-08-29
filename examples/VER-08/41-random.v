@@ -1,6 +1,6 @@
 `timescale 1ns/1ps
 
-module example;
+module testbench;
     reg [7:0] input_data;
     integer i;
 

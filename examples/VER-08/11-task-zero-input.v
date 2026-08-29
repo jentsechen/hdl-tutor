@@ -2,7 +2,7 @@
 
 // Unlike a function, which needs at least one input, a task can take none
 // at all.
-module example;
+module testbench;
     integer call_count;
 
     task report_call;

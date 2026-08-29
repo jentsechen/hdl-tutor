@@ -4,7 +4,7 @@ module leaf;
     initial $display("Running in %m");
 endmodule
 
-module example;
+module testbench;
     leaf leaf_a ();
     leaf leaf_b ();
 

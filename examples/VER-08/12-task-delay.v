@@ -1,7 +1,7 @@
 `timescale 1ns / 1ps
 
 // Only a task can contain timing controls (#delay); a function cannot.
-module example;
+module testbench;
     reg reset;
 
     task pulse_reset;
