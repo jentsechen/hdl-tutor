@@ -17,7 +17,7 @@ module example;
     endfunction
 
     reg [3:0] x, y;
-    reg [7:0] product_proc;
+    reg  [7:0] product_proc;
     wire [7:0] product_comb;
 
     // A function call is just an expression, so it can drive combinational
@@ -33,13 +33,15 @@ module example;
         y = 4'd5;
         product_proc = multiply(x, y);
         #1;
-        $display("multiply(%0d, %0d) = %0d (procedural)  %0d (assign)", x, y, product_proc, product_comb);
+        $display("multiply(%0d, %0d) = %0d (procedural)  %0d (assign)", x, y, product_proc,
+                 product_comb);
 
         x = 4'd7;
         y = 4'd9;
         product_proc = multiply(x, y);
         #1;
-        $display("multiply(%0d, %0d) = %0d (procedural)  %0d (assign)", x, y, product_proc, product_comb);
+        $display("multiply(%0d, %0d) = %0d (procedural)  %0d (assign)", x, y, product_proc,
+                 product_comb);
 
         // A function executes in zero simulation time: calling it twice in
         // a row never advances $time.

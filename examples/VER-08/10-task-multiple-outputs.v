@@ -1,4 +1,4 @@
-`timescale 1ns/1ps
+`timescale 1ns / 1ps
 
 // A task can have multiple outputs - a function can only return one value.
 module example;
@@ -6,8 +6,8 @@ module example;
     reg [7:0] and_out, or_out, xor_out;
 
     task logic_operations;
-        input  [7:0] a;
-        input  [7:0] b;
+        input [7:0] a;
+        input [7:0] b;
         output [7:0] and_result;
         output [7:0] or_result;
         output [7:0] xor_result;
