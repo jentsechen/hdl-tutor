@@ -28,7 +28,7 @@ Two ways to attach a delay value to the same logic function
 
 See
 [examples/VER-09/00-distributed-lumped-delay.v](../../examples/VER-09/00-distributed-lumped-delay.v):
-both models agree on worst-case delay (5+4 = 7+4 = 11), but only the
+both models agree on worst-case delay (7+4 = 11), but only the
 distributed model reacts faster when just one half of the logic changes.
 
 ## 2. Path Delay Modeling with `specify` Blocks (Pin-to-Pin Delay)
