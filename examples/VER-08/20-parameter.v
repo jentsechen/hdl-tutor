@@ -19,7 +19,7 @@ module testbench;
     wire [2:0] q3;
 
     // Parameter assignment during module instantiation
-    counter #() counter2 (
+    counter counter2 (
         .clk  (clk),
         .reset(reset),
         .q    (q2)
@@ -27,7 +27,7 @@ module testbench;
 
     // Same module, different WIDTH
     counter #(
-        .WIDTH(16)
+        .WIDTH(3)
     ) counter3 (
         .clk  (clk),
         .reset(reset),
@@ -36,7 +36,7 @@ module testbench;
 
     // Instantiated with the default WIDTH, then overridden via defparam
     // (an alternative to the instance-time #(...) override above)
-    wire [3:0] q1;
+    wire q1;
     counter counter_defparam (
         .clk  (clk),
         .reset(reset),
