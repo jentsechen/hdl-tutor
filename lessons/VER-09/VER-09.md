@@ -260,7 +260,9 @@ write_verilog out.v      # emit the gate-level netlist as structural Verilog
 
 ## 9. Synthesis + Gate-Level Simulation Flow
 
-Putting §7 and §8 together: synthesize
+<img src="synthesis_flow.png" width="60%">
+
+Synthesize
 [50-magnitude-comparator.v](../../examples/VER-09/50-magnitude-comparator.v)'s
 `magnitude_comparator` module, then re-run its own testbench unchanged
 against the resulting gate-level netlist instead of the original RTL - if
@@ -274,7 +276,7 @@ runs at all:
 
 `-noexpr` is included so the netlist keeps explicit named gate instances
 (`$_AND_`, `$_XOR_`, ...) instead of `write_verilog`'s default of folding
-them back into `assign`/`always` behavioral syntax - see §6 for why that
+them back into `assign`/`always` behavioral syntax - see Section 6 for why that
 default is misleading to look at:
 
 ```powershell
