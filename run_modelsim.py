@@ -52,6 +52,8 @@ def main():
     parser.add_argument("--top", default="testbench", help="top-level module name (default: testbench)")
     parser.add_argument("--no-gui", action="store_true", help="skip launching the waveform GUI")
     parser.add_argument("--vcd", action="store_true", help="also dump a .vcd next to the example (for e.g. wavedrom_from_vcd.py)")
+    parser.add_argument("--specify", action="store_true", help="compile specify blocks (path delays, $setup/$hold/$width) instead of ignoring them")
+    parser.add_argument("--delay-mode", choices=["min", "typ", "max"], default="typ", help="select which #(min:typ:max) delay value to use (default: typ)")
     args = parser.parse_args()
 
     example_name = choose_example(args.example)
@@ -70,7 +72,10 @@ def main():
         print("+", " ".join(vlib_cmd), flush=True)
         subprocess.run(vlib_cmd, cwd=tmp_dir, check=True)
 
-        vlog_cmd = [vlog, str(example_file)]
+        vlog_cmd = [vlog]
+        if args.specify:
+            vlog_cmd.append("+specify")
+        vlog_cmd.append(str(example_file))
         print("+", " ".join(vlog_cmd), flush=True)
         subprocess.run(vlog_cmd, cwd=tmp_dir, check=True)
 
@@ -82,7 +87,10 @@ def main():
             do_parts.append("vcd flush")
         do_parts.append("quit -f")
 
-        vsim_cmd = [vsim, "-c", f"work.{args.top}", "-do", "; ".join(do_parts)]
+        vsim_cmd = [vsim, "-c", f"work.{args.top}"]
+        if args.delay_mode != "typ":
+            vsim_cmd.append(f"+{args.delay_mode}delays")
+        vsim_cmd += ["-do", "; ".join(do_parts)]
         print("+", " ".join(vsim_cmd), flush=True)
         subprocess.run(vsim_cmd, cwd=tmp_dir, check=True)
 
