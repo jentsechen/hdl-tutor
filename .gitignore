@@ -3,6 +3,8 @@ workspace/*
 *.vvp
 *.vcd
 *.wlf
+*.synth.v
+work/
 transcript
 *.bkp
 __pycache__/

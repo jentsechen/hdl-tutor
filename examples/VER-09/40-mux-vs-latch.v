@@ -30,6 +30,11 @@ module good_mux (
         else out = b;
 endmodule
 
+// `SYNTH` is defined (with `-D SYNTH` on the yosys read_verilog command line)
+// only when synthesizing: it excludes this testbench module, since Yosys's
+// Verilog frontend elaborates `initial` blocks while reading the file and
+// otherwise aborts on the `$finish` below before synthesis passes ever run.
+`ifndef SYNTH
 module testbench;
     reg control, a, b;
     wire out_latch, out_mux;
@@ -65,3 +70,4 @@ module testbench;
         $finish;
     end
 endmodule
+`endif

@@ -26,6 +26,16 @@ file in `workspace/` — the one you're currently practicing on.
 
 - Python 3
 - Icarus Verilog (`iverilog` / `vvp`)
+- ModelSim (optional) — needed for constructs Icarus doesn't evaluate
+  (`specify`-block path delays, `$setup`/`$hold`/`$width` timing checks,
+  `#(min:typ:max)` delay selection, gate-level netlists), via
+  `run_modelsim.py`. This machine's install lives at
+  `C:\intelFPGA\20.1\modelsim_ase\win32aloem`.
+- Yosys (optional) — needed for the synthesis examples in VER-09, via raw
+  `yosys` commands documented in `lessons/VER-09/VER-09.md`. This machine's
+  install lives at `C:\oss-cad-suite` (the
+  [oss-cad-suite](https://github.com/YosysHQ/oss-cad-suite-build)
+  distribution); its `yosys.exe` needs both `bin` and `lib` on `PATH` to run.
 
 If Icarus Verilog isn't on your `PATH`, install it with:
 
@@ -45,6 +55,18 @@ python run_example.py VER-08/00-function
 With no argument it interactively lists every `examples/<lesson>/<topic>.v`
 to pick from. It compiles that file, runs it, and cleans up the compiled
 output afterward.
+
+Some examples need ModelSim instead of Icarus (see Prerequisites above) —
+run those with `run_modelsim.py`, e.g.:
+
+```powershell
+python run_modelsim.py VER-09/10-path-delay-specify --specify
+```
+
+This opens the ModelSim waveform GUI afterward (`--no-gui` to skip) and
+saves the waveform next to the source as `examples/<lesson>/<topic>.wlf`.
+See `lessons/VER-07/VER-07.md` and `lessons/VER-09/VER-09.md` for the flags
+each example needs (`--specify`, `--delay-mode`, `--top`, `--vcd`).
 
 ## Usage
 
